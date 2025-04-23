@@ -30,7 +30,7 @@ export default function CodingEditorPage() {
           method: "POST",
           headers: {
             "content-type": "application/json",
-            "X-RapidAPI-Key": "YOUR_RAPID_API_KEY",
+            "X-RapidAPI-Key": process.env.RAPIDAPI_KEY!,
             "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
           },
           body: JSON.stringify({
@@ -49,7 +49,7 @@ export default function CodingEditorPage() {
           `https://judge0-ce.p.rapidapi.com/submissions/${token}?base64_encoded=false`,
           {
             headers: {
-              "X-RapidAPI-Key": "YOUR_RAPID_API_KEY",
+              "X-RapidAPI-Key": process.env.RAPIDAPI_KEY!,
               "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
             },
           }
