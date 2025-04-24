@@ -15,18 +15,22 @@ import {
 
 export default function HomePage() {
   const { user } = useUser();
+  console.log("user", user?.imageUrl);
+
   const [open, setOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
       <nav className="bg-white shadow px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-semibold">The Coding Capsule</h1>
+        <Link href="/" className="text-xl font-semibold">
+          The Coding Capsule
+        </Link>
         <div className="flex items-center gap-2">
           {user && (
             <>
               <Image
-                src={user.imageUrl}
+                src={user?.imageUrl}
                 alt="Avatar"
                 width={32}
                 height={32}
@@ -47,7 +51,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
           {/* Write Code Individually */}
           <Link
-            href="/coding-editor"
+            href="/individualCoding-editor"
             className="p-6 rounded-xl shadow bg-white hover:bg-gray-50 transition border"
           >
             <h3 className="text-xl font-semibold">Write Code Individually</h3>
@@ -87,7 +91,7 @@ export default function HomePage() {
 
           {/* Generate Report */}
           <Link
-            href="/report-generator"
+            href="/report-making"
             className="p-6 rounded-xl shadow bg-white hover:bg-gray-50 transition border"
           >
             <h3 className="text-xl font-semibold">Generate Report</h3>
