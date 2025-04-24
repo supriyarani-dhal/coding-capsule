@@ -11,11 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-<<<<<<< HEAD
+
 //import { useState } from "react";
-=======
-import { useState } from "react";
->>>>>>> 8ed5734575220d4200cb1e6bd056718fbe503226
 import { languageMap } from "@/utils/Language";
 
 type Props = {
@@ -35,10 +32,6 @@ const Toolbar = ({
   onPushToGitHub,
   onVoiceMode,
 }: Props) => {
-<<<<<<< HEAD
-=======
-
->>>>>>> 8ed5734575220d4200cb1e6bd056718fbe503226
   return (
     <div className="w-full p-3 border-b bg-background flex items-center gap-2">
       <Button onClick={onSave} variant="outline">
@@ -60,14 +53,14 @@ const Toolbar = ({
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>Select the language</DropdownMenuLabel>
           <DropdownMenuSeparator />
-<<<<<<< HEAD
+          <DropdownMenuRadioGroup
+            value={language}
+            onValueChange={onLanguageChange}
+          />
           <DropdownMenuRadioGroup
             value={language}
             onValueChange={onLanguageChange}
           >
-=======
-          <DropdownMenuRadioGroup value={language} onValueChange={onLanguageChange}>
->>>>>>> 8ed5734575220d4200cb1e6bd056718fbe503226
             {Object.keys(languageMap).map((lang) => (
               <DropdownMenuRadioItem key={lang} value={lang}>
                 {lang}

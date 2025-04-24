@@ -1,7 +1,7 @@
 "use client";
 
 import { SetStateAction, useState } from "react";
-import MonacoEditor from "@/components/Editor/MonacoEditor";
+//import MonacoEditor from "@/components/Editor/MonacoEditor";
 import Sidebar from "@/components/Editor/Sidebar";
 import Toolbar from "@/components/Editor/Toolbar";
 import LiveCursor from "@/components/Editor/LiveCursor";
@@ -10,7 +10,16 @@ import { useUser } from "@clerk/nextjs";
 import axios from "axios";
 import OutputConsole from "@/components/Editor/OutputConsole";
 
-export default function IndividualEditorPage() {
+import dynamic from "next/dynamic";
+
+// Dynamically import Monaco Editor with SSR disabled because  the Monaco Editor (or related y-monaco) is trying to access window on the server side, but window only exists in the browser.
+
+//Since you're using Next.js, components like Monaco must be dynamically imported on the client side only, using next/dynamic with { ssr: false }.
+const MonacoEditor = dynamic(() => import("@/components/Editor/MonacoEditor"), {
+  ssr: false,
+  loading: () => <div className="text-white p-4">Loading editor...</div>,
+});
+export default function Page() {
   const [code, setCode] = useState("// Start coding here...");
   const [language, setLanguage] = useState("javascript");
 
