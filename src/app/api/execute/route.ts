@@ -7,7 +7,10 @@ export async function POST(req: Request) {
     const { code, language } = await req.json();
 
     const languageId = languageMap[language];
-
+    //console.log(languageId);
+    console.log(language);
+    
+    
     if (!languageId) {
       return NextResponse.json(
         { error: "Unsupported language" },

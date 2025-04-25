@@ -1,7 +1,7 @@
 "use client";
 
 import { Editor } from "@monaco-editor/react";
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 interface Props {
   code: string;
@@ -10,6 +10,8 @@ interface Props {
 }
 
 const StandaloneEditor = ({ code, language, onChange }: Props) => {
+  const editorRef = useRef();
+  
   const handleEditorChange = useCallback(
     (value: string | undefined) => {
       onChange(value || "");
@@ -17,12 +19,17 @@ const StandaloneEditor = ({ code, language, onChange }: Props) => {
     [onChange]
   );
 
+const onMount = (editor: unknown) => {
+  editorRef.current = editor;
+  editor?.focus();
+}
+
   return (
     <Editor
-      height="100vh"
+      height="100%"
       width="100%"
       theme="vs-dark"
-      defaultLanguage={language}
+      language={language}
       value={code}
       onChange={handleEditorChange}
       options={{
@@ -30,6 +37,7 @@ const StandaloneEditor = ({ code, language, onChange }: Props) => {
         fontSize: 14,
         minimap: { enabled: false },
       }}
+      onMount={onMount}
     />
   );
 };
