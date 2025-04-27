@@ -12,29 +12,30 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import FileExplorer from "./FileExplorer";
-
+import { useFolders } from "@/app/hooks/useFolder";
 
 interface SidebarProps {
-  onCreate: (type: "file" | "folder",name: string) => void;
-  files: { name: string; type: "file" | "folder" }[];
-  onOpen: (fileName: string) => void;
+  onCreate: (type: "file" | "folder", name: string) => void;
+  projectId: string;
+  projectType: "individual" | "collaborative";
 }
-const Sidebar = ({ onCreate, files , onOpen}: SidebarProps) => {
-
-  //create an empty file
-  const handleCreate = (type: "file" | "folder") => {
-    const name = prompt(`Enter ${type} name`);
-    if (!name) return;
-  
-    onCreate(type, name); // Pass type and name to parent
-  };
+const Sidebar = ({ onCreate, projectId }: SidebarProps) => {
+  const { folders, loading: foldersLoading } = useFolders(projectId);
 
   return (
     <aside className="w-64 bg-muted border-r h-full p-4 flex flex-col">
       <h2 className="text-lg font-semibold mb-4">📁 Project Files</h2>
       <ScrollArea className="flex-1 px-4">
-        <FileExplorer files={files} onOpen={onOpen}/>
+        {foldersLoading ? (
+          <p>Loading...</p>
+        ) : (
+          folders.map((folder) => (
+            <div key={folder._id as string} className="mb-2">
+              📁 {folder.name}
+              {/* You can also load files inside here */}
+            </div>
+          ))
+        )}
       </ScrollArea>
       <Separator className="mt-4" />
 
