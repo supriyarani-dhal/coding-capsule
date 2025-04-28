@@ -2,23 +2,37 @@
 
 import { useState, useEffect } from "react";
 import { IFolder } from "../models/Folder.model";
+import axios from "axios";
 
-export const useFolders = (projectId: string) => {
+// interface FolderType {
+//   _id: string;
+//   name: string;
+//   parentFolderId?: string;
+// }
+
+export const useFolders = (params: { projectType?: string; parentFolderId?: string; userId?: string }) => {
   const [folders, setFolders] = useState<IFolder[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  const fetchFolders = async () => {
+    try {
+      setLoading(true);
+
+      const { data } = await axios.get("/api/folders", {
+        params,
+      });
+
+      setFolders(data || []);
+    } catch (error) {
+      console.error("Failed to fetch folders:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!projectId) return;
-
-    const fetchFolders = async () => {
-      const res = await fetch(`/api/folders?projectId=${projectId}`);
-      const data = await res.json();
-      setFolders(data);
-      setLoading(false);
-    };
-
     fetchFolders();
-  }, [projectId]);
+  }, [params.projectType, params.parentFolderId, params.userId]);
 
-  return { folders, loading };
+  return { folders, loading, fetchFolders };
 };

@@ -2,14 +2,17 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IFolder extends Document {
   name: string;
-  projectId: mongoose.Types.ObjectId;
-  parentFolderId?: mongoose.Types.ObjectId | null;
+  parentFolderId?: mongoose.Types.ObjectId | null; //if root then null
+  createdy: string; 
+  projectType: "individual" | "collaborative";
 }
 
 const FolderSchema: Schema = new Schema({
   name: { type: String, required: true },
-  projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
   parentFolderId: { type: Schema.Types.ObjectId, ref: "Folder", default: null },
+  createdBy: { type: String },
+  projectType: { type: String },
+
 });
 
 const Folder: Model<IFolder> =

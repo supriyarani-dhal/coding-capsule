@@ -51,7 +51,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
           {/* Write Code Individually */}
           <Link
-            href="/individualCoding-editor"
+            href="/individual"
             className="p-6 rounded-xl shadow bg-white hover:bg-gray-50 transition border"
           >
             <h3 className="text-xl font-semibold">Write Code Individually</h3>
