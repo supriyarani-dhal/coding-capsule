@@ -17,7 +17,9 @@ export default function Page() {
   const { user } = useUser();
   const pathname = usePathname();
 
-  const projectType = pathname.includes("collaborative") ? "collaborative" : "individual";
+  const projectType = pathname.includes("collaborative")
+    ? "collaborative"
+    : "individual";
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<{
@@ -25,13 +27,15 @@ export default function Page() {
     name: string;
     extension: string;
     language: string;
-    content: string;} | null>(null)
+    content: string;
+  } | null>(null);
   const [language, setLanguage] = useState("javascript");
   const [code, setCode] = useState(languageSnippets["javascript"] || "");
   const [output, setOutput] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [creating, setCreating] = useState(false);
 
   // Fetch files/folders based on createdBy and projectType
   const { files, fetchFiles } = useFiles({
@@ -40,7 +44,7 @@ export default function Page() {
     folderId: selectedFolderId || undefined,
   });
 
-  const { folders, fetchFolders } = useFolders({
+  const { folders, folderLoading, fetchFolders } = useFolders({
     userId: user?.id,
     projectType: selectedFolderId ? undefined : projectType,
     parentFolderId: selectedFolderId || undefined,
@@ -70,8 +74,8 @@ export default function Page() {
     setCode(languageSnippets[newLang] || "");
   };
 
-   // When user clicks a file in Sidebar:
-   const handleOpenFile = async (fileId: string) => {
+  // When user clicks a file in Sidebar:
+  const handleOpenFile = async (fileId: string) => {
     try {
       const { data } = await axios.get("/api/files", {
         params: { id: fileId },
@@ -91,12 +95,12 @@ export default function Page() {
     }
 
     const ext = getExtension(language);
-  if (ext !== selectedFile.extension) {
-    alert(
-      `You chose language “${language}” but the file extension is “.${selectedFile.extension}”.\nPlease switch your language.`
-    );
-    return;
-  }
+    if (ext !== selectedFile.extension) {
+      alert(
+        `You chose language “${language}” but the file extension is “.${selectedFile.extension}”.\nPlease switch your language.`
+      );
+      return;
+    }
 
     try {
       await axios.put("/api/files", {
@@ -114,41 +118,44 @@ export default function Page() {
   };
   const handleCreate = async (type: "file" | "folder") => {
     try {
+      setCreating(true);
       const name = prompt(`Enter ${type === "file" ? "file" : "folder"} name`);
-    if (!name) {
-      alert("Name cannot be empty!");
-      return;
-    }
+      if (!name) {
+        alert("Name cannot be empty!");
+        return;
+      }
 
-    if (type === "file") {
-      const extension = getExtension(language);
-      await axios.post("/api/file", {
-        name,
-        content: code,
-        language: language, // Optional: default language
-        extension,
-        folderId: selectedFolderId || undefined,
-        createdBy: selectedFolderId ? undefined : user?.id,
-        projectType: selectedFolderId ? undefined : projectType,
-      });
-    } else if (type === "folder") {
-      await axios.post("/api/folder", {
-        name,
-        parentFolderId: selectedFolderId || undefined,
-        createdBy: selectedFolderId ? undefined : user?.id,
-        projectType: selectedFolderId ? undefined : projectType,
-      });
-    }
+      if (type === "file") {
+        const extension = getExtension(language);
+        await axios.post("/api/files", {
+          name,
+          folderId: selectedFolderId || undefined,
+          content: code,
+          language: language, // Optional: default language
+          extension,
+          createdBy: selectedFolderId ? undefined : user?.id,
+          projectType: selectedFolderId ? undefined : projectType,
+        });
+      } else if (type === "folder") {
+        await axios.post("/api/folders", {
+          name,
+          parentFolderId: selectedFolderId || undefined,
+          createdBy: selectedFolderId ? undefined : user?.id,
+          projectType: selectedFolderId ? undefined : projectType,
+        });
+      }
 
-    // After creation, refresh sidebar
-    fetchFiles();
-    fetchFolders();
-    
-    alert(`${type === "file" ? "File" : "Folder"} created successfully!`);
-  } catch (error) {
-    console.error("Creation error:", error);
-    alert("Something went wrong during creation.");
-  }
+      // After creation, refresh sidebar
+      fetchFiles();
+      fetchFolders();
+
+      alert(`${type === "file" ? "File" : "Folder"} created successfully!`);
+    } catch (error) {
+      console.error("Creation error:", error);
+      alert("Something went wrong during creation.");
+    } finally {
+      setCreating(false); // Stop loading
+    }
   };
 
   const handleSelectFolder = (folderId: string | null) => {
@@ -161,10 +168,12 @@ export default function Page() {
 
   const handleDelete = async () => {
     if (!selectedItemId) return;
-    
-    const confirmed = confirm("Are you sure you want to delete this file/folder?");
+
+    const confirmed = confirm(
+      "Are you sure you want to delete this file/folder?"
+    );
     if (!confirmed) return;
-  
+
     try {
       setDeleting(true);
       await axios.delete(`/api/delete/${selectedItemId}`);
@@ -174,7 +183,7 @@ export default function Page() {
     } catch (error) {
       console.error(error);
       alert("Failed to delete!");
-    }finally {
+    } finally {
       setDeleting(false); // Stop loading
     }
   };
@@ -193,6 +202,8 @@ export default function Page() {
         onSelectFolder={handleSelectFolder}
         selectedFolderId={selectedFolderId}
         deleting={deleting}
+        creating={creating}
+        folderLoading={folderLoading}
       />
 
       {/* Main Area */}

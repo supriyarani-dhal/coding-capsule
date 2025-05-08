@@ -1,5 +1,5 @@
 import File from "@/app/models/File.model";
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -12,10 +12,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, content, language, extension , folderId, projectType } = await req.json();
+    const { name, folderId, content, language, extension, projectType } =
+      await req.json();
 
     if (!name) {
-      return NextResponse.json({ error: "File name is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "File name is required" },
+        { status: 400 }
+      );
     }
     // require a dot
     if (!name.includes(".")) {
@@ -28,10 +32,13 @@ export async function POST(req: Request) {
     // extract ext
     const parts = name.split(".");
     const ext = parts.pop()!.toLowerCase();
-    const newName = parts.join(".")
+    const newName = parts.join(".");
 
-    if(ext !== extension){
-     return NextResponse.json({ error: "Extension does not match" }, { status: 400 });
+    if (ext !== extension) {
+      return NextResponse.json(
+        { error: "Extension does not match" },
+        { status: 400 }
+      );
     }
 
     const newFile = await File.create({
@@ -70,13 +77,20 @@ export async function GET(req: Request) {
       files = await File.find({ folderId });
     } else {
       // Fetch root-level files
-      files = await File.find({ createdBy, projectType, folderId: { $exists: false } });
+      files = await File.find({
+        createdBy,
+        projectType,
+        folderId: { $exists: false },
+      });
     }
 
     return NextResponse.json(files, { status: 200 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -99,10 +113,7 @@ export async function PUT(req: Request) {
     );
 
     if (!updated) {
-      return NextResponse.json(
-        { error: "File not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
     }
 
     return NextResponse.json(updated, { status: 200 });

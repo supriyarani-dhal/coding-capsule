@@ -15,7 +15,6 @@ import {
 
 export default function HomePage() {
   const { user } = useUser();
-  console.log("user", user?.imageUrl);
 
   const [open, setOpen] = useState(false);
 
@@ -52,8 +51,7 @@ export default function HomePage() {
           {/* Write Code Individually */}
           <Link
             href="/individual"
-            className="p-6 rounded-xl shadow bg-white hover:bg-gray-50 transition border"
-          >
+            className="p-6 rounded-xl shadow bg-white hover:bg-gray-50 transition border">
             <h3 className="text-xl font-semibold">Write Code Individually</h3>
             <p className="text-sm mt-2 text-gray-600">
               Start coding on your own in a powerful editor.
@@ -92,8 +90,7 @@ export default function HomePage() {
           {/* Generate Report */}
           <Link
             href="/report-making"
-            className="p-6 rounded-xl shadow bg-white hover:bg-gray-50 transition border"
-          >
+            className="p-6 rounded-xl shadow bg-white hover:bg-gray-50 transition border">
             <h3 className="text-xl font-semibold">Generate Report</h3>
             <p className="text-sm mt-2 text-gray-600">
               Upload your project or GitHub repo to get a report.

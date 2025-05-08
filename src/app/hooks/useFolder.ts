@@ -10,13 +10,17 @@ import axios from "axios";
 //   parentFolderId?: string;
 // }
 
-export const useFolders = (params: { projectType?: string; parentFolderId?: string; userId?: string }) => {
+export const useFolders = (params: {
+  userId?: string;
+  projectType?: string;
+  parentFolderId?: string;
+}) => {
   const [folders, setFolders] = useState<IFolder[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [folderLoading, setFolderLoading] = useState(false);
 
   const fetchFolders = async () => {
     try {
-      setLoading(true);
+      setFolderLoading(true);
 
       const { data } = await axios.get("/api/folders", {
         params,
@@ -26,7 +30,7 @@ export const useFolders = (params: { projectType?: string; parentFolderId?: stri
     } catch (error) {
       console.error("Failed to fetch folders:", error);
     } finally {
-      setLoading(false);
+      setFolderLoading(false);
     }
   };
 
@@ -34,5 +38,5 @@ export const useFolders = (params: { projectType?: string; parentFolderId?: stri
     fetchFolders();
   }, [params.projectType, params.parentFolderId, params.userId]);
 
-  return { folders, loading, fetchFolders };
+  return { folders, folderLoading, fetchFolders };
 };

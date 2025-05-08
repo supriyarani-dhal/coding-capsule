@@ -1,5 +1,5 @@
 import Folder from "@/app/models/Folder.model";
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -12,16 +12,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { name, parentFolderId, projectType } = await req.json();
+    const { name, parentFolderId, projectType, createdBy } = await req.json();
 
     if (!name) {
-      return NextResponse.json({ error: "Folder name is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Folder name is required" },
+        { status: 400 }
+      );
     }
 
     const newFolder = await Folder.create({
       name,
       parentFolderId: parentFolderId || undefined,
-      createdBy: !parentFolderId ? userId : undefined,
+      createdBy: !parentFolderId ? createdBy : undefined,
       projectType: !parentFolderId ? projectType : undefined,
     });
 
@@ -39,10 +42,10 @@ export async function GET(req: Request) {
   try {
     await connectDB();
     const url = new URL(req.url);
-    //todo:correct it after
-    const parentFolderId = url.searchParams.get("parentFolderId");
-    const createdBy = url.searchParams.get("createdBy");
-    const projectType = url.searchParams.get("projectType");
+
+    const parentFolderId = url?.searchParams?.get("parentFolderId");
+    const createdBy = url?.searchParams?.get("userId");
+    const projectType = url?.searchParams?.get("projectType");
 
     let folders;
 
@@ -51,7 +54,11 @@ export async function GET(req: Request) {
       folders = await Folder.find({ parentFolderId });
     } else {
       // Fetch top-level folders (root)
-      folders = await Folder.find({ createdBy, projectType, parentFolderId: { $exists: false } });
+      folders = await Folder.find({
+        createdBy,
+        projectType,
+        parentFolderId: null,
+      });
     }
 
     return NextResponse.json(folders, { status: 200 });

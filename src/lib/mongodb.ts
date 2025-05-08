@@ -1,25 +1,28 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI as string;
+type connectionObject = {
+  isConnected?: number;
+};
 
-if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local"
-  );
-}
+//the property "isConnected" is optional , so the variable connection can be empty also
+const connection: connectionObject = {};
 
-/**
- * Global is used here to maintain a cached connection across hot reloads in development.
- * This prevents connections growing exponentially during API Route usage.
- */
-const cached = (global as any).mongoose || { conn: null, promise: null };
-
-export async function connectDB() {
-  if (cached.conn) return cached.conn;
-
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI).then((mongoose) => mongoose);
+async function connectDB(): Promise<void> {
+  //first check the database is connected or not
+  if (connection.isConnected) {
+    console.log("database has already connected");
+    return;
   }
-  cached.conn = await cached.promise;
-  return cached.conn;
+
+  try {
+    const db = await mongoose.connect(process.env.MONGODB_URI || "", {});
+
+    connection.isConnected = db.connections[0].readyState;
+    console.log("DATABASE connected successfully");
+  } catch (error) {
+    console.log("DATABASE connection failed", error);
+    process.exit(1);
+  }
 }
+
+export default connectDB;

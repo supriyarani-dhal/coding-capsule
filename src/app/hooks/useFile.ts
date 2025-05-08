@@ -12,7 +12,11 @@ import axios from "axios";
 //   folderId?: string;
 //}
 
-export const useFiles = (params: { projectType?: string; folderId?: string; userId?: string })=> {
+export const useFiles = (params: {
+  userId?: string;
+  projectType?: string;
+  folderId?: string;
+}) => {
   const [files, setFiles] = useState<IFile[]>([]);
   const [loading, setLoading] = useState(false);
 

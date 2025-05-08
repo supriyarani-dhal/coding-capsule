@@ -1,9 +1,12 @@
 import File from "@/app/models/File.model";
 import Folder from "@/app/models/Folder.model";
-import { connectDB } from "@/lib/mongodb";
+import connectDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(req: NextRequest, { params }: { params: { itemId: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { itemId: string } }
+) {
   await connectDB();
   const { itemId } = params;
 
@@ -24,8 +27,9 @@ export async function DELETE(req: NextRequest, { params }: { params: { itemId: s
     // RECURSIVELY delete all subfolders and files inside
     await deleteFolderAndContents(folder._id);
 
-    return new NextResponse("Folder and contents deleted successfully", { status: 200 });
-
+    return new NextResponse("Folder and contents deleted successfully", {
+      status: 200,
+    });
   } catch (error) {
     console.error(error);
     return new NextResponse("Server Error", { status: 500 });
